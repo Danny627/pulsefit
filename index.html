@@ -508,4 +508,733 @@ function formatNumber(value,decimals=1){
 
 function dateKey(date=new Date()){
   const d=new Date(date);
-  return `\({d.getFul
+  return `\({d.getFullYear()}-\){String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+
+function monday(date=new Date()){
+  const d=new Date(date);
+  d.setHours(0,0,0,0);
+  const day=d.getDay()||7;
+  d.setDate(d.getDate()-day+1);
+  return d;
+}
+
+function weekList(){
+  const start=monday();
+  return activities.filter(a=>new Date(a.date)>=start);
+}
+
+function distanceTotal(list=weekList()){
+  return list.reduce((total,a)=>total+Number(a.distance||0),0);
+}
+
+function secondsTotal(list=weekList()){
+  return list.reduce((total,a)=>total+Number(a.seconds||0),0);
+}
+
+function formatDuration(seconds){
+  const min=Math.round(Number(seconds||0)/60);
+  return min<60?`\({min} min`:`\){Math.floor(min/60)}h ${String(min%60).padStart(2,'0')}`;
+}
+
+function clock(seconds){
+  seconds=Math.floor(seconds);
+  const h=Math.floor(seconds/3600);
+  const m=Math.floor((seconds%3600)/60);
+  const s=seconds%60;
+  return [h,m,s].map(v=>String(v).padStart(2,'0')).join(':');
+}
+
+function calories(type,seconds,distance){
+  const met={
+    Corrida:9,
+    Ciclismo:7,
+    Caminhada:3.5,
+    Força:5
+  }[type]||5;
+
+  return Math.max(
+    1,
+    Math.round(met*3.5*settings.weight/200*seconds+distance*8)
+  );
+}
+
+function elapsed(){
+  return Math.floor(
+    (
+      workout.savedTime+
+      (workout.running&&!workout.paused
+        ?Date.now()-workout.startedAt
+        :0)
+    )/1000
+  );
+}
+
+function currentDistance(){
+  return workout.gpsDistance+workout.manualDistance;
+}
+
+function showView(id){
+  \]('.view').forEach(v=>v.classList.toggle('active',v.id===id));
+  \[('.nav button').forEach(b=>b.classList.toggle('active',b.dataset.go===id));
+
+  if(id==='home')renderHome();
+  if(id==='activities')renderActivities();
+  if(id==='stats')renderStats();
+  if(id==='profile')renderProfile();
+
+  scrollTo(0,0);
+}
+
+function renderHome(){
+  const list=weekList();
+  const distance=distanceTotal(list);
+  const percent=Math.min(100,Math.round(distance/settings.goal*100));
+
+  $('#firstName').textContent=(settings.name||'Atleta').split(' ')[0];
+  $('#today').textContent=new Date().toLocaleDateString('pt-BR',{
+    weekday:'long',
+    day:'2-digit',
+    month:'long'
+  }).toUpperCase();
+
+  $('#goalDistance').textContent=formatNumber(distance);
+  $('#goalValue').textContent=formatNumber(settings.goal,0);
+  $('#goalPercent').textContent=percent+'%';
+  $('#goalProgress').style.width=percent+'%';
+
+  $('#goalMessage').textContent=percent>=100
+    ?'Meta da semana concluída. Excelente trabalho!'
+    :distance
+      ?`Faltam ${formatNumber(Math.max(0,settings.goal-distance))} km para sua meta.`
+      :'Comece seu primeiro treino da semana.';
+
+  $('#weekDistance').textContent=formatNumber(distance)+' km';
+  $('#weekTime').textContent=formatDuration(secondsTotal(list));
+  $('#weekCalories').textContent=formatNumber(
+    list.reduce((total,a)=>total+Number(a.calories||0),0),
+    0
+  );
+  $('#streak').textContent=streak();
+
+  const recent=activities
+    .slice()
+    .sort((a,b)=>new Date(b.date)-new Date(a.date))
+    .slice(0,3);
+
+  $('#recent').innerHTML=recent.length
+    ?recent.map(a=>activityHTML(a)).join('')
+    :'<div class="empty">Ainda não há treinos.<br>Seu primeiro registro aparece aqui.</div>';
+}
+
+function streak(){
+  const days=new Set(activities.map(a=>dateKey(a.date)));
+  let date=new Date();
+
+  if(!days.has(dateKey(date))){
+    date.setDate(date.getDate()-1);
+  }
+
+  let count=0;
+
+  while(days.has(dateKey(date))){
+    count++;
+    date.setDate(date.getDate()-1);
+  }
+
+  return count;
+}
+
+function activityHTML(a,deleteButton=false){
+  const date=new Date(a.date).toLocaleDateString('pt-BR',{
+    day:'2-digit',
+    month:'short'
+  }).replace('.','');
+
+  return `
+    <article class="activity">
+      <span class="kind">${icons[a.type]||'✦'}</span>
+      <main>
+        <b>${a.type}</b>
+        <small>\({date} · \){formatDuration(a.seconds)}\({a.avgHr?` · \){a.avgHr} bpm`:''}</small>
+      </main>
+      <aside>
+        <b>${formatNumber(a.distance)} km</b>
+        <small>${formatNumber(a.calories,0)} kcal</small>
+      </aside>
+      \({deleteButton?`<button class="delete" data-delete="\){a.id}">×</button>`:''}
+    </article>
+  `;
+}
+
+function renderActivities(){
+  const list=activities
+    .filter(a=>filter==='Todos'||a.type===filter)
+    .sort((a,b)=>new Date(b.date)-new Date(a.date));
+
+  $('#activityList').innerHTML=list.length
+    ?list.map(a=>activityHTML(a,true)).join('')
+    :'<div class="empty">Nenhuma atividade encontrada.</div>';
+
+  \]('[data-delete]').forEach(button=>{
+    button.onclick=()=>{
+      if(confirm('Excluir este treino?')){
+        activities=activities.filter(a=>a.id!==button.dataset.delete);
+        save();
+        renderAll();
+        toast('Treino excluído');
+      }
+    };
+  });
+}
+
+function renderStats(){
+  const list=weekList();
+  const distance=distanceTotal(list);
+
+  $('#statsDistance').textContent=formatNumber(distance)+' km';
+  $('#statsGoal').textContent=formatNumber(settings.goal,0);
+  $('#statsActivities').textContent=list.length;
+  $('#statsDuration').textContent=formatDuration(secondsTotal(list));
+  $('#statsCalories').textContent=formatNumber(
+    list.reduce((total,a)=>total+Number(a.calories||0),0),
+    0
+  );
+
+  const daily=[];
+
+  for(let i=0;i<7;i++){
+    const day=new Date(monday());
+    day.setDate(day.getDate()+i);
+
+    daily.push(list
+      .filter(a=>dateKey(a.date)===dateKey(day))
+      .reduce((total,a)=>total+Number(a.distance||0),0));
+  }
+
+  const max=Math.max(...daily,1);
+
+  $('#bars').innerHTML=daily.map((value,i)=>{
+    const day=new Date(monday());
+    day.setDate(day.getDate()+i);
+
+    return `<i style="height:\({Math.max(8,value/max*82)}px" data-day="\){
+      day.toLocaleDateString('pt-BR',{weekday:'narrow'})
+    }"></i>`;
+  }).join('');
+
+  const counts={};
+  list.forEach(a=>counts[a.type]=(counts[a.type]||0)+1);
+
+  $('#distribution').innerHTML=Object.keys(icons).map(type=>`
+    <div class="dist">
+      <label>\({icons[type]} \){type}</label>
+      <i><b style="width:${(counts[type]||0)/(list.length||1)*100}%"></b></i>
+      <span>${counts[type]||0}</span>
+    </div>
+  `).join('');
+}
+
+function renderProfile(){
+  const name=settings.name||'Atleta';
+
+  $('#profileName').textContent=name;
+  $('#avatar').textContent=name.split(' ').map(x=>x[0]).slice(0,2).join('').toUpperCase();
+
+  $('#profileWatchTitle').textContent=bluetoothDevice
+    ?'Relógio conectado'
+    :'Conectar relógio';
+
+  $('#profileWatchText').textContent=bluetoothDevice
+    ?(bluetoothDevice.name||'Monitor cardíaco ativo')
+    :'Bluetooth / batimento cardíaco';
+}
+
+function renderAll(){
+  renderHome();
+  renderActivities();
+  renderStats();
+  renderProfile();
+  updateWorkout();
+}
+
+function startWorkout(type){
+  if(type){
+    $('#type').value=type;
+    workout.type=type;
+  }
+
+  if(workout.running)return;
+
+  workout.type=$('#type').value;
+  workout.running=true;
+  workout.paused=false;
+  workout.startedAt=Date.now();
+  timerId=setInterval(updateWorkout,500);
+
+  $('#start').hidden=true;
+  $('#pause').hidden=false;
+  $('#finish').hidden=false;
+
+  startGPS();
+  toast('Treino iniciado');
+}
+
+function pauseWorkout(){
+  if(!workout.running)return;
+
+  if(workout.paused){
+    workout.startedAt=Date.now();
+    workout.paused=false;
+    $('#pause').textContent='Pausar';
+    toast('Treino retomado');
+  }else{
+    workout.savedTime+=Date.now()-workout.startedAt;
+    workout.paused=true;
+    $('#pause').textContent='Retomar';
+    toast('Treino pausado');
+  }
+
+  updateWorkout();
+}
+
+function updateWorkout(){
+  const seconds=elapsed();
+  const distance=currentDistance();
+
+  $('#timer').textContent=clock(seconds);
+  $('#liveDistance').textContent=formatNumber(distance,2);
+  $('#liveCalories').textContent=formatNumber(calories(workout.type,seconds,distance),0);
+  $('#liveHr').textContent=workout.heartRate||'—';
+  $('#liveSpeed').textContent=formatNumber(workout.speed,1)+' km/h';
+  $('#liveElevation').textContent=Math.round(workout.elevation)+' m';
+  $('#liveSteps').textContent=formatNumber(workout.steps,0);
+  $('#manualDistance').textContent=formatNumber(workout.manualDistance,2);
+  $('#selectedType').textContent=workout.type.toUpperCase();
+
+  $('#livePace').textContent=distance>.05
+    ?`\({Math.floor(seconds/60/distance)}:\){String(Math.floor(seconds/distance)%60).padStart(2,'0')}`
+    :'—';
+
+  if(workout.running){
+    $('#pause').textContent=workout.paused?'Retomar':'Pausar';
+  }
+}
+
+function finishWorkout(){
+  if(!workout.running)return;
+
+  const seconds=elapsed();
+  const distance=currentDistance();
+
+  if(seconds<3&&distance<.01){
+    toast('Faça alguns segundos de treino antes de finalizar');
+    return;
+  }
+
+  activities.push({
+    id:Date.now().toString(36),
+    type:workout.type,
+    date:new Date().toISOString(),
+    seconds,
+    distance:Number(distance.toFixed(3)),
+    calories:calories(workout.type,seconds,distance),
+    avgHr:workout.heartCount
+      ?Math.round(workout.heartTotal/workout.heartCount)
+      :0,
+    maxHr:workout.maxHeartRate||0,
+    steps:workout.steps
+  });
+
+  save();
+  stopGPS();
+  clearInterval(timerId);
+  timerId=null;
+
+  workout={
+    type:$('#type').value,
+    running:false,
+    paused:false,
+    startedAt:0,
+    savedTime:0,
+    gpsDistance:0,
+    manualDistance:0,
+    lastPoint:null,
+    gpsWatch:null,
+    speed:0,
+    elevation:0,
+    heartRate:null,
+    maxHeartRate:0,
+    heartTotal:0,
+    heartCount:0,
+    steps:0
+  };
+
+  $('#start').hidden=false;
+  $('#pause').hidden=true;
+  $('#finish').hidden=true;
+
+  renderAll();
+  showView('home');
+  toast('Treino salvo com sucesso!');
+}
+
+function startGPS(){
+  if(!navigator.geolocation){
+    gpsText(false,'GPS não disponível neste navegador');
+    return;
+  }
+
+  if(workout.gpsWatch!==null)return;
+
+  gpsText(false,'Buscando localização…');
+
+  workout.gpsWatch=navigator.geolocation.watchPosition(
+    position=>{
+      if(workout.paused)return;
+
+      const point={
+        lat:position.coords.latitude,
+        lon:position.coords.longitude,
+        alt:position.coords.altitude||0
+      };
+
+      if(workout.lastPoint){
+        const km=haversine(workout.lastPoint,point);
+
+        if(km<.1){
+          workout.gpsDistance+=km;
+          workout.speed=Math.max(
+            0,
+            position.coords.speed||km*3600/Math.max(elapsed(),1)
+          );
+          workout.steps=Math.round(workout.gpsDistance*1300);
+        }
+      }
+
+      workout.lastPoint=point;
+      workout.elevation=Math.max(workout.elevation,point.alt);
+      gpsText(true,'GPS ativo · distância automática');
+      updateWorkout();
+    },
+    error=>{
+      gpsText(false,
+        error.code===1
+          ?'Permissão de localização negada'
+          :'GPS aguardando sinal'
+      );
+    },
+    {
+      enableHighAccuracy:true,
+      maximumAge:3000,
+      timeout:10000
+    }
+  );
+}
+
+function stopGPS(){
+  if(workout.gpsWatch!==null){
+    navigator.geolocation.clearWatch(workout.gpsWatch);
+    workout.gpsWatch=null;
+  }
+
+  workout.lastPoint=null;
+  gpsText(false,'Ative para registrar a distância automaticamente');
+}
+
+function gpsText(active,text){
+  $('#gpsTitle').textContent=active?'GPS ativo':'GPS não iniciado';
+  $('#gpsText').textContent=text;
+  $('#gps').textContent=active?'GPS ativo':'Ativar GPS';
+}
+
+function haversine(a,b){
+  const radius=6371;
+  const rad=Math.PI/180;
+  const dLat=(b.lat-a.lat)*rad;
+  const dLon=(b.lon-a.lon)*rad;
+
+  const x=
+    Math.sin(dLat/2)**2+
+    Math.cos(a.lat*rad)*
+    Math.cos(b.lat*rad)*
+    Math.sin(dLon/2)**2;
+
+  return 2*radius*Math.asin(Math.sqrt(x));
+}
+
+function addManual(value){
+  if(!workout.running){
+    toast('Comece o treino primeiro');
+    return;
+  }
+
+  workout.manualDistance=Math.max(
+    0,
+    Number((workout.manualDistance+value).toFixed(2))
+  );
+
+  updateWorkout();
+}
+
+async function connectBluetooth(){
+  if(!navigator.bluetooth){
+    toast('Bluetooth BLE funciona no Chrome Android em HTTPS');
+    return;
+  }
+
+  try{
+    if(bluetoothDevice?.gatt?.connected){
+      bluetoothDevice.gatt.disconnect();
+      return;
+    }
+
+    toast('Escolha seu relógio ou sensor cardíaco');
+
+    bluetoothDevice=await navigator.bluetooth.requestDevice({
+      filters:[{services:['heart_rate']}],
+      optionalServices:['battery_service']
+    });
+
+    bluetoothDevice.addEventListener('gattserverdisconnected',()=>{
+      heartCharacteristic=null;
+      updateBluetooth(false);
+      toast('Relógio desconectado');
+    });
+
+    const server=await bluetoothDevice.gatt.connect();
+    const service=await server.getPrimaryService('heart_rate');
+
+    heartCharacteristic=await service.getCharacteristic('heart_rate_measurement');
+    await heartCharacteristic.startNotifications();
+
+    heartCharacteristic.addEventListener(
+      'characteristicvaluechanged',
+      event=>{
+        const value=event.target.value;
+        const flags=value.getUint8(0);
+        const hr=flags&1?value.getUint16(1,true):value.getUint8(1);
+
+        workout.heartRate=hr;
+        workout.maxHeartRate=Math.max(workout.maxHeartRate,hr);
+        workout.heartTotal+=hr;
+        workout.heartCount++;
+
+        updateWorkout();
+      }
+    );
+
+    updateBluetooth(true);
+    toast('Relógio conectado');
+  }catch(error){
+    bluetoothDevice=null;
+    heartCharacteristic=null;
+    updateBluetooth(false);
+
+    if(error.name!=='NotFoundError'){
+      toast('Não foi possível conectar ao relógio');
+    }
+  }
+}
+
+function updateBluetooth(connected){
+  $('#watchDot').classList.toggle('on',connected);
+  $('#watchTitle').textContent=connected
+    ?'Relógio conectado'
+    :'Relógio não conectado';
+
+  $('#watchText').textContent=connected
+    ?(bluetoothDevice?.name||'Monitor cardíaco')+' · recebendo dados'
+    :'Monitor cardíaco Bluetooth BLE';
+
+  $('#watchButton').textContent=connected?'Desconectar':'Conectar';
+  $('#watchButton').classList.toggle('connected',connected);
+  renderProfile();
+}
+
+function openModal(type){
+  const profile=type==='profile';
+
+  $('#modalTitle').textContent=profile?'Editar perfil':'Meta semanal';
+  $('#modalText').textContent=profile
+    ?'Digite seu nome e peso separados por vírgula. Ex.: Daniel Richard, 70'
+    :'Quantos quilômetros você quer fazer?';
+
+  $('#modalInput').type=profile?'text':'number';
+  $('#modalInput').value=profile
+    ?`\({settings.name}, \){settings.weight}`
+    :settings.goal;
+
+  $('#modal').classList.add('open');
+  $('#modalInput').focus();
+}
+
+function closeModal(){
+  $('#modal').classList.remove('open');
+}
+
+function saveModal(event){
+  event.preventDefault();
+
+  const value=$('#modalInput').value.trim();
+
+  if($('#modalInput').type==='text'){
+    const parts=value.split(',');
+    settings.name=parts[0].trim()||'Atleta';
+
+    const weight=Number(parts[1]);
+    if(weight>20&&weight<300)settings.weight=weight;
+  }else{
+    const goal=Number(value);
+
+    if(goal<1||goal>999){
+      toast('Digite uma meta entre 1 e 999 km');
+      return;
+    }
+
+    settings.goal=goal;
+  }
+
+  save();
+  closeModal();
+  renderAll();
+  toast('Dados atualizados');
+}
+
+function exportData(){
+  const data={
+    version:5,
+    exportedAt:new Date().toISOString(),
+    settings,
+    activities
+  };
+
+  const blob=new Blob(
+    [JSON.stringify(data,null,2)],
+    {type:'application/json'}
+  );
+
+  const link=document.createElement('a');
+  link.href=URL.createObjectURL(blob);
+  link.download='pulsefit-backup.json';
+  link.click();
+
+  setTimeout(()=>URL.revokeObjectURL(link.href),1000);
+  toast('Backup exportado');
+}
+
+function importData(){
+  const file=$('#file').files[0];
+  if(!file)return;
+
+  const reader=new FileReader();
+
+  reader.onload=()=>{
+    try{
+      const data=JSON.parse(reader.result);
+      const list=Array.isArray(data)?data:data.activities;
+
+      if(!Array.isArray(list))throw new Error();
+
+      activities=list.filter(a=>a&&a.type&&a.date);
+
+      if(data.settings){
+        settings={...settings,...data.settings};
+      }
+
+      save();
+      renderAll();
+      toast('Backup importado');
+    }catch{
+      toast('Arquivo inválido');
+    }
+  };
+
+  reader.readAsText(file);
+  $('#file').value='';
+}
+
+\[('[data-go]').forEach(button=>{
+  button.onclick=()=>showView(button.dataset.go);
+});
+
+\]('[data-start]').forEach(button=>{
+  button.onclick=()=>{
+    showView('workout');
+    startWorkout(button.dataset.start);
+  };
+});
+
+$('#type').onchange=event=>{
+  if(!workout.running){
+    workout.type=event.target.value;
+    updateWorkout();
+  }
+};
+
+$('#start').onclick=()=>startWorkout();
+$('#pause').onclick=pauseWorkout;
+$('#finish').onclick=finishWorkout;
+$('#plus').onclick=()=>addManual(.1);
+$('#minus').onclick=()=>addManual(-.1);
+$('#gps').onclick=startGPS;
+$('#watchButton').onclick=connectBluetooth;
+$('#profileWatch').onclick=connectBluetooth;
+$('#editGoal').onclick=()=>openModal('goal');
+$('#editProfile').onclick=()=>openModal('profile');
+$('#cancelModal').onclick=closeModal;
+$('#modalForm').onsubmit=saveModal;
+$('#modal').onclick=e=>{if(e.target.id==='modal')closeModal()};
+$('#export').onclick=exportData;
+\(('#import').onclick=()=>\)('#file').click();
+$('#file').onchange=importData;
+
+$('#clear').onclick=()=>{
+  if(confirm('Apagar todos os treinos salvos?')){
+    activities=[];
+    save();
+    renderAll();
+    toast('Histórico apagado');
+  }
+};
+
+\[('[data-filter]').forEach(button=>{
+  button.onclick=()=>{
+    \]('[data-filter]').forEach(b=>b.classList.remove('active'));
+    button.classList.add('active');
+    filter=button.dataset.filter;
+    renderActivities();
+  };
+});
+
+$('#theme').onclick=()=>{
+  settings.theme=settings.theme==='light'?'dark':'light';
+  document.body.classList.toggle('light',settings.theme==='light');
+  save();
+};
+
+let installPrompt=null;
+
+window.addEventListener('beforeinstallprompt',event=>{
+  event.preventDefault();
+  installPrompt=event;
+  $('#install').hidden=false;
+});
+
+$('#install').onclick=async()=>{
+  if(!installPrompt)return;
+
+  installPrompt.prompt();
+  await installPrompt.userChoice;
+  installPrompt=null;
+  $('#install').hidden=true;
+};
+
+load();
+renderAll();
+updateBluetooth(false);
+
+})();
+</script>
+</body>
+</html>
