@@ -12,672 +12,87 @@
 <body>
 <div class="app">
 <header class="top"><div class="brand"><b>✦</b>pulsefit</div><button id="themeBtn">☼</button></header>
-
 <section id="home" class="view active">
 <div class="hero"><div><span class="eyebrow" id="today">SEU TREINO</span><h1>Boa, Daniel.<br><em>Vamos nos mover?</em></h1></div><div class="streak">🔥<strong id="streak">0</strong><small>dias seguidos</small></div></div>
-
 <div class="goal"><span class="eyebrow">META SEMANAL</span><div class="goal-head"><strong><span id="goalDistance">0</span> <small>/ <span id="goalValue">20</span> km</small></strong><b id="goalPercent">0%</b></div><div class="progress"><i id="goalProgress"></i></div><p id="goalMessage">Comece seu primeiro treino da semana.</p></div>
-
 <div class="title"><h2>Iniciar treino</h2><button class="link" data-go="workout">Ver tudo →</button></div>
-
-<div class="grid">
-<button class="tile run" data-start="Corrida"><span class="symbol">↗</span><b>Corrida</b><small>Ritmo e distância</small></button>
-<button class="tile ride" data-start="Ciclismo"><span class="symbol">⌁</span><b>Ciclismo</b><small>Velocidade e rota</small></button>
-<button class="tile walk" data-start="Caminhada"><span class="symbol">◒</span><b>Caminhada</b><small>Passos e distância</small></button>
-<button class="tile strength" data-start="Força"><span class="symbol">✚</span><b>Força</b><small>Séries e repetições</small></button>
-</div>
-
-<div class="title"><h2>Resumo da semana</h2><button class="link" data-go="stats">Detalhes →</button></div>
-
-<div class="summary">
-<div class="card"><small>DISTÂNCIA</small><b id="weekDistance">0 km</b><small id="weekTrend">Comece hoje</small></div>
-<div class="card"><small>TEMPO</small><b id="weekTime">0 min</b><small>Esta semana</small></div>
-<div class="card"><small>CALORIAS</small><b id="weekCalories">0</b><small>Estimativa</small></div>
-</div>
-
-<div class="title"><h2>Atividades recentes</h2><button class="link" data-go="activities">Histórico →</button></div>
-<div id="recent"></div>
+<div class="grid"><button class="tile run" data-start="Corrida"><span class="symbol">↗</span><b>Corrida</b><small>Ritmo e distância</small></button><button class="tile ride" data-start="Ciclismo"><span class="symbol">⌁</span><b>Ciclismo</b><small>Velocidade e rota</small></button><button class="tile walk" data-start="Caminhada"><span class="symbol">◒</span><b>Caminhada</b><small>Passos e distância</small></button><button class="tile strength" data-start="Força"><span class="symbol">✚</span><b>Força</b><small>Séries e repetições</small></button></div>
+<div class="title"><h2>Resumo da semana</h2><button class="link" data-go="stats">Detalhes →</button></div><div class="summary"><div class="card"><small>DISTÂNCIA</small><b id="weekDistance">0 km</b><small id="weekTrend">Comece hoje</small></div><div class="card"><small>TEMPO</small><b id="weekTime">0 min</b><small>Esta semana</small></div><div class="card"><small>CALORIAS</small><b id="weekCalories">0</b><small>Estimativa</small></div></div>
+<div class="title"><h2>Atividades recentes</h2><button class="link" data-go="activities">Histórico →</button></div><div id="recent"></div>
 </section>
-
-<section id="activities" class="view">
-<div class="page-title"><span class="eyebrow">SEU HISTÓRICO</span><h1>Atividades</h1></div>
-<div class="filters">
-<button class="filter active" data-filter="Todos">Todos</button>
-<button class="filter" data-filter="Corrida">Corrida</button>
-<button class="filter" data-filter="Ciclismo">Ciclismo</button>
-<button class="filter" data-filter="Caminhada">Caminhada</button>
-<button class="filter" data-filter="Força">Força</button>
+<section id="activities" class="view"><div class="page-title"><span class="eyebrow">SEU HISTÓRICO</span><h1>Atividades</h1></div><div class="filters"><button class="filter active" data-filter="Todos">Todos</button><button class="filter" data-filter="Corrida">Corrida</button><button class="filter" data-filter="Ciclismo">Ciclismo</button><button class="filter" data-filter="Caminhada">Caminhada</button><button class="filter" data-filter="Força">Força</button></div><div id="activityList"></div></section>
+<section id="workout" class="view"><div class="page-title"><span class="eyebrow">REGISTRE SEU MOMENTO</span><h1>Novo treino</h1></div><select id="type" class="select"><option>Corrida</option><option>Ciclismo</option><option>Caminhada</option><option>Força</option></select><div class="timerbox"><small id="selectedType" class="muted">CORRIDA</small><div id="timer" class="timer">00:00:00</div><small class="muted">tempo decorrido</small><div class="metrics"><div><b id="liveDistance">0.00</b><small>km</small></div><div><b id="livePace">—</b><small>ritmo/km</small></div><div><b id="liveCalories">0</b><small>kcal</small></div><div><b id="liveHr">—</b><small>bpm</small></div></div><div class="sensor"><span>Velocidade<b id="liveSpeed">0,0 km/h</b></span><span>Altimetria<b id="liveElevation">0 m</b></span><span>Passos<b id="liveSteps">0</b></span></div><button id="start" class="primary">Começar treino</button><div class="row"><button id="pause" class="secondary" hidden>Pausar</button><button id="finish" class="finish" hidden>Finalizar</button></div></div><div class="manual"><span>↔</span><main><b>Distância manual</b><small>Use quando o GPS estiver desligado.</small></main><button id="minus" class="step">−</button><b id="manualDistance">0.00</b><button id="plus" class="step">+</button></div><div class="location"><span>⌖</span><main><b id="gpsTitle">GPS não iniciado</b><small id="gpsText">O GPS será ativado ao começar o treino.</small></main><button id="gpsButton" class="link">Ativar</button></div><div class="watch"><span>♥</span><main><b id="watchTitle">Relógio não conectado</b><small id="watchText">Bluetooth / sensor cardíaco padrão</small></main><button id="watchButton">Conectar</button></div></section>
+<section id="stats" class="view"><div class="page-title"><span class="eyebrow">SEU DESEMPENHO</span><h1>Estatísticas</h1></div><div class="stats-big"><small>DISTÂNCIA TOTAL</small><strong id="statsDistance">0,00 km</strong><small>Meta semanal: <span id="statsGoal">20</span> km</small><div class="bars" id="bars"></div></div><div class="summary"><div class="card"><small>TREINOS</small><b id="statsActivities">0</b></div><div class="card"><small>TEMPO</small><b id="statsDuration">0h 00</b></div><div class="card"><small>CALORIAS</small><b id="statsCalories">0</b></div></div><div class="title"><h2>Modalidades</h2></div><div class="distribution" id="distribution"></div><div class="title"><h2>Meta pessoal</h2><button id="editGoal" class="link">Editar</button></div></section>
+<section id="profile" class="view profile"><div class="avatar">DR</div><span class="eyebrow">PERFIL</span><h1>Daniel Richard</h1><p class="muted">Constância vence intensidade.</p><div class="menu"><button id="profileWatch"><span>♥</span><main><b id="profileWatchTitle">Conectar relógio</b><small id="profileWatchText">Bluetooth / batimento cardíaco</small></main><span>›</span></button><button id="export"><span>⇩</span><main><b>Exportar dados</b><small>Salvar backup JSON</small></main><span>›</span></button><button id="import"><span>↥</span><main><b>Importar dados</b><small>Restaurar um backup</small></main><span>›</span></button><button id="clear" class="danger"><span>⌫</span><main><b>Apagar histórico</b><small>Remove os treinos salvos</small></main><span>›</span></button></div><input id="file" type="file" accept="application/json" hidden></section>
 </div>
-<div id="activityList"></div>
-</section>
-
-<section id="workout" class="view">
-<div class="page-title"><span class="eyebrow">REGISTRE SEU MOMENTO</span><h1>Novo treino</h1></div>
-
-<select id="type" class="select">
-<option>Corrida</option>
-<option>Ciclismo</option>
-<option>Caminhada</option>
-<option>Força</option>
-</select>
-
-<div class="timerbox">
-<small id="selectedType" class="muted">CORRIDA</small>
-<div id="timer" class="timer">00:00:00</div>
-<small class="muted">tempo decorrido</small>
-
-<div class="metrics">
-<div><b id="liveDistance">0.00</b><small>km</small></div>
-<div><b id="livePace">—</b><small>ritmo/km</small></div>
-<div><b id="liveCalories">0</b><small>kcal</small></div>
-<div><b id="liveHr">—</b><small>bpm</small></div>
-</div>
-
-<div class="sensor">
-<span>Velocidade<b id="liveSpeed">0,0 km/h</b></span>
-<span>Altimetria<b id="liveElevation">0 m</b></span>
-<span>Passos<b id="liveSteps">0</b></span>
-</div>
-
-<button id="start" class="primary">Começar treino</button>
-
-<div class="row">
-<button id="pause" class="secondary" hidden>Pausar</button>
-<button id="finish" class="finish" hidden>Finalizar</button>
-</div>
-</div>
-
-<div class="manual">
-<span>↔</span>
-<main><b>Distância manual</b><small>Use quando o GPS estiver desligado.</small></main>
-<button id="minus" class="step">−</button>
-<b id="manualDistance">0.00</b>
-<button id="plus" class="step">+</button>
-</div>
-
-<div class="location">
-<span>⌖</span>
-<main><b id="gpsTitle">GPS não iniciado</b><small id="gpsText">O GPS será ativado ao começar o treino.</small></main>
-<button id="gpsButton" class="link">Ativar</button>
-</div>
-
-<div class="watch">
-<span>♥</span>
-<main><b id="watchTitle">Relógio não conectado</b><small id="watchText">Bluetooth / sensor cardíaco padrão</small></main>
-<button id="watchButton">Conectar</button>
-</div>
-</section>
-
-<section id="stats" class="view">
-<div class="page-title"><span class="eyebrow">SEU DESEMPENHO</span><h1>Estatísticas</h1></div>
-
-<div class="stats-big">
-<small>DISTÂNCIA TOTAL</small>
-<strong id="statsDistance">0,00 km</strong>
-<small>Meta semanal: <span id="statsGoal">20</span> km</small>
-<div class="bars" id="bars"></div>
-</div>
-
-<div class="summary">
-<div class="card"><small>TREINOS</small><b id="statsActivities">0</b></div>
-<div class="card"><small>TEMPO</small><b id="statsDuration">0h 00</b></div>
-<div class="card"><small>CALORIAS</small><b id="statsCalories">0</b></div>
-</div>
-
-<div class="title"><h2>Modalidades</h2></div>
-<div class="distribution" id="distribution"></div>
-
-<div class="title"><h2>Meta pessoal</h2><button id="editGoal" class="link">Editar</button></div>
-</section>
-
-<section id="profile" class="view profile">
-<div class="avatar">DR</div>
-<span class="eyebrow">PERFIL</span>
-<h1>Daniel Richard</h1>
-<p class="muted">Constância vence intensidade.</p>
-
-<div class="menu">
-<button id="profileWatch"><span>♥</span><main><b id="profileWatchTitle">Conectar relógio</b><small id="profileWatchText">Bluetooth / batimento cardíaco</small></main><span>›</span></button>
-<button id="export"><span>⇩</span><main><b>Exportar dados</b><small>Salvar backup JSON</small></main><span>›</span></button>
-<button id="import"><span>↥</span><main><b>Importar dados</b><small>Restaurar um backup</small></main><span>›</span></button>
-<button id="clear" class="danger"><span>⌫</span><main><b>Apagar histórico</b><small>Remove os treinos salvos</small></main><span>›</span></button>
-</div>
-
-<input id="file" type="file" accept="application/json" hidden>
-</section>
-</div>
-
-<nav class="nav">
-<button class="active" data-go="home">⌂<small>Início</small></button>
-<button data-go="activities">▤<small>Atividades</small></button>
-<button class="new" data-go="workout">＋</button>
-<button data-go="stats">◒<small>Dados</small></button>
-<button data-go="profile">◉<small>Perfil</small></button>
-</nav>
-
-<div id="toast" class="toast"></div>
-
-<div id="modal" class="modal">
-<form id="goalForm">
-<b>Meta semanal</b>
-<p class="muted">Quantos quilômetros você quer fazer?</p>
-<input id="goalInput" type="number" min="1" max="999" value="20">
-<button class="primary">Salvar meta</button>
-</form>
-</div>
-
+<nav class="nav"><button class="active" data-go="home">⌂<small>Início</small></button><button data-go="activities">▤<small>Atividades</small></button><button class="new" data-go="workout">＋</button><button data-go="stats">◒<small>Dados</small></button><button data-go="profile">◉<small>Perfil</small></button></nav>
+<div id="toast" class="toast"></div><div id="modal" class="modal"><form id="goalForm"><b>Meta semanal</b><p class="muted">Quantos quilômetros você quer fazer?</p><input id="goalInput" type="number" min="1" max="999" value="20"><button class="primary">Salvar meta</button></form></div>
+<script>
+(function(){
+  function show(view){
+    var views=document.querySelectorAll('.view');
+    var nav=document.querySelectorAll('.nav [data-go]');
+    for(var i=0;i<views.length;i++)views[i].classList.toggle('active',views[i].id===view);
+    for(var j=0;j<nav.length;j++)nav[j].classList.toggle('active',nav[j].getAttribute('data-go')===view);
+  }
+  window.pulsefitGo=show;
+  var buttons=document.querySelectorAll('[data-go]');
+  for(var k=0;k<buttons.length;k++){
+    buttons[k].addEventListener('click',function(){show(this.getAttribute('data-go'))});
+  }
+  var starts=document.querySelectorAll('[data-start]');
+  for(var n=0;n<starts.length;n++){
+    starts[n].addEventListener('click',function(){
+      var type=document.getElementById('type');
+      if(type)type.value=this.getAttribute('data-start');
+      show('workout');
+    });
+  }
+})();
+</script>
 <script>
 const KEY='pulsefit.activities.v2',GOAL_KEY='pulsefit.goal.v2',THEME_KEY='pulsefit.theme.v2';
-const $=s=>document.querySelector(s),\[=s=>[...document.querySelectorAll(s)];
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 const icons={Corrida:'↗',Ciclismo:'⌁',Caminhada:'◒',Força:'✚'};
 const colors={Corrida:'run',Ciclismo:'ride',Caminhada:'walk',Força:'strength'};
-
-let activities=JSON.parse(localStorage.getItem(KEY)||'[]');
-let weeklyGoal=Number(localStorage.getItem(GOAL_KEY)||20);
-let selectedType='Corrida';
-
-let distance=0,seconds=0,timerId=null,started=false,paused=false;
-let lastPoint=null,path=[],elevation=0,speed=0,heartRate=0,maxHeartRate=0;
-let hrSum=0,hrCount=0,steps=0,gpsWatch=null;
-let btDevice=null,btCharacteristic=null,filter='Todos';
-
+let activities=JSON.parse(localStorage.getItem(KEY)||'[]'),weeklyGoal=Number(localStorage.getItem(GOAL_KEY)||20),selectedType='Corrida';
+let distance=0,seconds=0,timerId=null,started=false,paused=false,lastPoint=null,path=[],elevation=0,speed=0,heartRate=0,maxHeartRate=0,hrSum=0,hrCount=0,steps=0,gpsWatch=null,btDevice=null,btCharacteristic=null,filter='Todos';
 $('#today').textContent=new Intl.DateTimeFormat('pt-BR',{weekday:'long',day:'2-digit',month:'long'}).format(new Date()).toUpperCase();
-
-if(localStorage.getItem(THEME_KEY)==='light'){
-  document.body.classList.add('light')
-}else{
-  localStorage.setItem(THEME_KEY,'dark')
-}
-
-function toast(m){
-  const t=$('#toast');
-  t.textContent=m;
-  t.classList.add('show');
-  clearTimeout(toast.t);
-  toast.t=setTimeout(()=>t.classList.remove('show'),2600)
-}
-
-function save(){
-  localStorage.setItem(KEY,JSON.stringify(activities));
-  localStorage.setItem(GOAL_KEY,weeklyGoal)
-}
-
-function go(v){
-  \]('.view').forEach(x=>x.classList.toggle('active',x.id===v));
-  \[('.nav button').forEach(x=>x.classList.toggle('active',x.dataset.go===v));
-  if(v==='home')renderHome();
-  if(v==='activities')renderActivities();
-  if(v==='stats')renderStats()
-}
-
-\]('[data-go]').forEach(x=>x.addEventListener('click',()=>go(x.dataset.go)));
-
-\[('[data-start]').forEach(x=>x.addEventListener('click',()=>{
-  $('#type').value=x.dataset.start;
-  selectedType=x.dataset.start;
-  $('#selectedType').textContent=selectedType.toUpperCase();
-  go('workout')
-}));
-
-$('#type').addEventListener('change',e=>{
-  if(!started){
-    selectedType=e.target.value;
-    $('#selectedType').textContent=selectedType.toUpperCase()
-  }
-});
-
-function week(){
-  const d=new Date(),start=new Date(d);
-  start.setDate(d.getDate()-((d.getDay()+6)%7));
-  start.setHours(0,0,0,0);
-  return activities.filter(a=>new Date(a.date)>=start)
-}
-
-function total(a){
-  return a.reduce((x,y)=>({
-    distance:x.distance+(Number(y.distance)||0),
-    seconds:x.seconds+(Number(y.seconds)||0),
-    calories:x.calories+(Number(y.calories)||0)
-  }),{distance:0,seconds:0,calories:0})
-}
-
-function streak(){
-  const days=new Set(activities.map(a=>new Date(a.date).toISOString().slice(0,10)));
-  let d=new Date(),n=0;
-  while(days.has(d.toISOString().slice(0,10))){
-    n++;
-    d.setDate(d.getDate()-1)
-  }
-  return n
-}
-
-function activityHtml(a){
-  const date=new Intl.DateTimeFormat('pt-BR',{day:'2-digit',month:'short'}).format(new Date(a.date));
-  const hr=a.avgHeartRate?` · ${a.avgHeartRate} bpm`:'';
-
-  return `<div class="activity">
-    <span class="kind">${icons[a.type]||'•'}</span>
-    <main>
-      <b>${a.type}</b>
-      <small>\({date} · \){Math.floor(a.seconds/60)} min · \({a.calories} kcal\){hr}</small>
-    </main>
-    <aside>
-      <b>${Number(a.distance).toFixed(2)} km</b>
-      <small>${a.maxHeartRate?'máx '+a.maxHeartRate+' bpm':'atividade'}</small>
-    </aside>
-  </div>`
-}
-
-function renderHome(){
-  const t=total(week());
-  const p=Math.min(100,Math.round(t.distance/weeklyGoal*100));
-
-  $('#streak').textContent=streak();
-  $('#goalDistance').textContent=t.distance.toFixed(1);
-  $('#goalValue').textContent=weeklyGoal;
-  $('#goalPercent').textContent=p+'%';
-  $('#goalProgress').style.width=p+'%';
-  $('#goalMessage').textContent=p>=100?'Meta semanal concluída!':(weeklyGoal-t.distance).toFixed(1)+' km restantes';
-  $('#weekDistance').textContent=t.distance.toFixed(1)+' km';
-  $('#weekTime').textContent=Math.round(t.seconds/60)+' min';
-  $('#weekCalories').textContent=t.calories;
-  $('#weekTrend').textContent=week().length?week().length+' treino(s) esta semana':'Comece hoje';
-  $('#recent').innerHTML=activities.slice(0,3).map(activityHtml).join('')||'<p class="muted">Nenhum treino registrado ainda.</p>'
-}
-
-function renderActivities(){
-  const list=filter==='Todos'?activities:activities.filter(a=>a.type===filter);
-  $('#activityList').innerHTML=list.map(activityHtml).join('')||'<p class="muted">Nenhuma atividade encontrada.</p>'
-}
-
-function renderStats(){
-  const list=week(),t=total(list);
-  $('#statsDistance').textContent=t.distance.toFixed(2).replace('.',',')+' km';
-  $('#statsGoal').textContent=weeklyGoal;
-  $('#statsActivities').textContent=list.length;
-  $('#statsDuration').textContent=Math.floor(t.seconds/3600)+'h '+String(Math.floor(t.seconds%3600/60)).padStart(2,'0');
-  $('#statsCalories').textContent=t.calories;
-
-  const count=Object.keys(icons).map(type=>({
-    type,
-    n:list.filter(a=>a.type===type).length
-  }));
-
-  const max=Math.max(1,...count.map(x=>x.n));
-
-  $('#distribution').innerHTML=count.map(x=>`
-    <div class="dist">
-      <label>\({icons[x.type]} \){x.type}</label>
-      <i><b style="width:${x.n/max*100}%"></b></i>
-      <span>${x.n}</span>
-    </div>
-  `).join('');
-
-  $('#bars').innerHTML=Array.from({length:7},(_,i)=>{
-    const d=new Date();
-    d.setDate(d.getDate()-(6-i));
-
-    const n=activities
-      .filter(a=>new Date(a.date).toISOString().slice(0,10)===d.toISOString().slice(0,10))
-      .reduce((s,a)=>s+a.distance,0);
-
-    return `<i style="height:${Math.max(8,Math.min(68,n/Math.max(1,weeklyGoal)*68))}px"></i>`
-  }).join('')
-}
-
-function haversine(a,b){
-  const R=6371,r=Math.PI/180;
-  const d1=(b.lat-a.lat)*r,d2=(b.lon-a.lon)*r;
-  const x=Math.sin(d1/2)**2+Math.cos(a.lat*r)*Math.cos(b.lat*r)*Math.sin(d2/2)**2;
-  return 2*R*Math.atan2(Math.sqrt(x),Math.sqrt(1-x))
-}
-
-function receiveLocation(lat,lon,accuracy=0,metersPerSecond=0,alt=0){
-  if(!started||paused||accuracy>80)return;
-
-  const p={lat,lon,at:Date.now(),alt};
-
-  if(lastPoint){
-    const d=haversine(lastPoint,p);
-
-    if(d>.001&&d<.2){
-      distance+=d;
-      path.push(p)
-    }
-
-    if(alt>lastPoint.alt)elevation+=alt-lastPoint.alt
-  }else{
-    path.push(p)
-  }
-
-  lastPoint=p;
-  speed=Math.max(0,metersPerSecond*3.6);
-  updateLive()
-}
-
-function updateLive(){
-  const pace=distance>0?seconds/60/distance:0;
-
-  $('#timer').textContent=[
-    Math.floor(seconds/3600),
-    Math.floor(seconds%3600/60),
-    seconds%60
-  ].map(x=>String(x).padStart(2,'0')).join(':');
-
-  $('#liveDistance').textContent=distance.toFixed(2);
-  $('#livePace').textContent=pace?Math.floor(pace)+':'+String(Math.round(pace%1*60)).padStart(2,'0'):'—';
-  $('#liveCalories').textContent=Math.round(distance*65+seconds/60*4);
-  $('#manualDistance').textContent=distance.toFixed(2);
-  $('#liveHr').textContent=heartRate||'—';
-  $('#liveSpeed').textContent=speed.toFixed(1).replace('.',',')+' km/h';
-  $('#liveElevation').textContent=Math.round(elevation)+' m';
-  $('#liveSteps').textContent=steps
-}
-
-window.__pfNativeLocation=receiveLocation;
-
-window.__pfNativeSteps=n=>{
-  steps=Math.round(n);
-  updateLive()
-};
-
-window.__pfHeartRate=n=>{
-  heartRate=Math.round(n);
-  maxHeartRate=Math.max(maxHeartRate,heartRate);
-  hrSum+=heartRate;
-  hrCount++;
-  updateLive()
-};
-
-window.__pfNativeGps=ok=>{
-  $('#gpsTitle').textContent=ok?'GPS ativo':'GPS não iniciado';
-  $('#gpsText').textContent=ok?'Rota sendo monitorada':'Ative o GPS para maior precisão'
-};
-
-window.__pfNativeError=toast;
-
-function native(name){
-  try{
-    if(window.PulseFitNative&&PulseFitNative[name])PulseFitNative[name]()
-  }catch(e){}
-}
-
-function startGps(){
-  if(window.PulseFitNative){
-    native('startTracking');
-    return
-  }
-
-  if(!navigator.geolocation){
-    toast('GPS não disponível');
-    return
-  }
-
-  gpsWatch=navigator.geolocation.watchPosition(
-    p=>receiveLocation(
-      p.coords.latitude,
-      p.coords.longitude,
-      p.coords.accuracy,
-      p.coords.speed||0,
-      p.coords.altitude||0
-    ),
-    ()=>toast('Permissão de localização negada'),
-    {
-      enableHighAccuracy:true,
-      maximumAge:1000,
-      timeout:10000
-    }
-  );
-
-  $('#gpsTitle').textContent='GPS ativo';
-  $('#gpsText').textContent='Rota sendo monitorada'
-}
-
-function stopGps(){
-  if(window.PulseFitNative)native('stopTracking');
-
-  if(gpsWatch!==null){
-    navigator.geolocation.clearWatch(gpsWatch);
-    gpsWatch=null
-  }
-}
-
-function resetSession(){
-  distance=0;
-  seconds=0;
-  lastPoint=null;
-  path=[];
-  elevation=0;
-  speed=0;
-  heartRate=0;
-  maxHeartRate=0;
-  hrSum=0;
-  hrCount=0;
-  steps=0;
-  updateLive()
-}
-
-$('#start').addEventListener('click',()=>{
-  started=true;
-  paused=false;
-  resetSession();
-  $('#start').hidden=true;
-  $('#pause').hidden=false;
-  $('#finish').hidden=false;
-  startGps();
-
-  timerId=setInterval(()=>{
-    if(!paused){
-      seconds++;
-      updateLive()
-    }
-  },1000);
-
-  toast('Treino iniciado')
-});
-
-$('#pause').addEventListener('click',()=>{
-  paused=!paused;
-  $('#pause').textContent=paused?'Continuar':'Pausar';
-  if(paused)lastPoint=null;
-  toast(paused?'Treino pausado':'Treino retomado')
-});
-
-$('#finish').addEventListener('click',()=>{
-  if(seconds<5&&distance===0){
-    toast('Faça alguns segundos ou informe uma distância');
-    return
-  }
-
-  activities.unshift({
-    id:Date.now(),
-    type:selectedType,
-    date:new Date().toISOString(),
-    seconds,
-    distance:Number(distance.toFixed(2)),
-    calories:Math.round(distance*65+seconds/60*4),
-    avgHeartRate:hrCount?Math.round(hrSum/hrCount):0,
-    maxHeartRate,
-    elevation:Math.round(elevation),
-    steps,
-    path
-  });
-
-  save();
-  stopGps();
-  clearInterval(timerId);
-  started=false;
-  $('#start').hidden=false;
-  $('#pause').hidden=true;
-  $('#finish').hidden=true;
-  toast('Treino salvo');
-  go('activities')
-});
-
-$('#plus').addEventListener('click',()=>{
-  distance=Math.min(999,distance+.1);
-  updateLive()
-});
-
-$('#minus').addEventListener('click',()=>{
-  distance=Math.max(0,distance-.1);
-  updateLive()
-});
-
-$('#gpsButton').addEventListener('click',startGps);
-
-\]('.filter').forEach(x=>x.addEventListener('click',()=>{
-  filter=x.dataset.filter;
-  \(\)('.filter').forEach(y=>y.classList.remove('active'));
-  x.classList.add('active');
-  renderActivities()
-}));
-
-$('#themeBtn').addEventListener('click',()=>{
-  document.body.classList.toggle('light');
-  localStorage.setItem(THEME_KEY,document.body.classList.contains('light')?'light':'dark')
-});
-
-function setWatch(connected,scanning=false){
-  $('#watchTitle').textContent=connected?'Relógio conectado':scanning?'Procurando relógio…':'Relógio não conectado';
-  $('#watchText').textContent=connected?'Batimentos recebidos em tempo real':'Bluetooth / sensor cardíaco padrão';
-  $('#watchButton').textContent=connected?'Desconectar':'Conectar';
-  $('#watchButton').classList.toggle('connected',connected);
-  $('#profileWatchTitle').textContent=connected?'Relógio conectado':'Conectar relógio';
-  $('#profileWatchText').textContent=connected?'Batimento em tempo real':'Bluetooth / batimento cardíaco'
-}
-
-async function browserWatch(){
-  if(!navigator.bluetooth){
-    toast('Use o APK ou Chrome com HTTPS');
-    return
-  }
-
-  try{
-    setWatch(false,true);
-
-    btDevice=await navigator.bluetooth.requestDevice({
-      filters:[{services:['heart_rate']}]
-    });
-
-    btDevice.addEventListener('gattserverdisconnected',()=>setWatch(false));
-
-    const g=await btDevice.gatt.connect();
-    const s=await g.getPrimaryService('heart_rate');
-
-    btCharacteristic=await s.getCharacteristic('heart_rate_measurement');
-    await btCharacteristic.startNotifications();
-
-    btCharacteristic.addEventListener('characteristicvaluechanged',e=>{
-      const v=e.target.value;
-      const b=v.getUint8(0)&1?v.getUint16(1,true):v.getUint8(1);
-      window.__pfHeartRate(b)
-    });
-
-    setWatch(true);
-    toast('Relógio conectado')
-  }catch(e){
-    setWatch(false);
-    if(e.name!=='NotFoundError')toast('Não foi possível conectar')
-  }
-}
-
-function connectWatch(){
-  if(window.PulseFitNative)native('scanWatch');
-  else browserWatch()
-}
-
-function disconnectWatch(){
-  if(window.PulseFitNative)native('disconnectWatch');
-  else if(btDevice&&btDevice.gatt.connected)btDevice.gatt.disconnect();
-  setWatch(false)
-}
-
-$('#watchButton').addEventListener('click',()=>{
-  $('#watchButton').classList.contains('connected')?disconnectWatch():connectWatch()
-});
-
-$('#profileWatch').addEventListener('click',()=>{
-  $('#watchButton').classList.contains('connected')?disconnectWatch():connectWatch()
-});
-
-$('#editGoal').addEventListener('click',()=>{
-  $('#goalInput').value=weeklyGoal;
-  $('#modal').classList.add('open')
-});
-
-$('#goalForm').addEventListener('submit',e=>{
-  e.preventDefault();
-  weeklyGoal=Math.max(1,Number($('#goalInput').value)||20);
-  save();
-  $('#modal').classList.remove('open');
-  renderHome();
-  renderStats()
-});
-
-$('#modal').addEventListener('click',e=>{
-  if(e.target.id==='modal')e.currentTarget.classList.remove('open')
-});
-
-$('#export').addEventListener('click',()=>{
-  const a=document.createElement('a');
-
-  a.href=URL.createObjectURL(new Blob([
-    JSON.stringify({
-      app:'PulseFit',
-      version:2,
-      goal:weeklyGoal,
-      activities
-    },null,2)
-  ],{type:'application/json'}));
-
-  a.download='pulsefit-backup.json';
-  a.click();
-  toast('Backup exportado')
-});
-
-\(('#import').addEventListener('click',()=>\)('#file').click());
-
-$('#file').addEventListener('change',e=>{
-  const f=e.target.files[0];
-  if(!f)return;
-
-  const r=new FileReader();
-
-  r.onload=()=>{
-    try{
-      const d=JSON.parse(r.result);
-      if(!Array.isArray(d.activities))throw Error();
-
-      activities=d.activities;
-      weeklyGoal=Number(d.goal)||20;
-      save();
-      renderHome();
-      renderActivities();
-      renderStats();
-      toast('Backup restaurado')
-    }catch(e){
-      toast('Backup inválido')
-    }
-  };
-
-  r.readAsText(f)
-});
-
-$('#clear').addEventListener('click',()=>{
-  if(confirm('Apagar todo o histórico?')){
-    activities=[];
-    save();
-    renderHome();
-    renderActivities();
-    renderStats()
-  }
-});
-
-renderHome();
-renderActivities();
-renderStats();
-updateLive();
+if(localStorage.getItem(THEME_KEY)==='light')document.body.classList.add('light');else localStorage.setItem(THEME_KEY,'dark');
+function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('show');clearTimeout(toast.t);toast.t=setTimeout(()=>t.classList.remove('show'),2600)}
+function save(){localStorage.setItem(KEY,JSON.stringify(activities));localStorage.setItem(GOAL_KEY,weeklyGoal)}
+function go(v){$$('.view').forEach(x=>x.classList.toggle('active',x.id===v));$$('.nav button').forEach(x=>x.classList.toggle('active',x.dataset.go===v));if(v==='home')renderHome();if(v==='activities')renderActivities();if(v==='stats')renderStats()}
+$$('[data-go]').forEach(x=>x.addEventListener('click',()=>go(x.dataset.go)));
+$$('[data-start]').forEach(x=>x.addEventListener('click',()=>{$('#type').value=x.dataset.start;selectedType=x.dataset.start;go('workout')}));
+$('#type').addEventListener('change',e=>{if(!started){selectedType=e.target.value;$('#selectedType').textContent=selectedType.toUpperCase()}});
+function week(){const d=new Date(),start=new Date(d);start.setDate(d.getDate()-((d.getDay()+6)%7));start.setHours(0,0,0,0);return activities.filter(a=>new Date(a.date)>=start)}
+function total(a){return a.reduce((x,y)=>({distance:x.distance+(Number(y.distance)||0),seconds:x.seconds+(Number(y.seconds)||0),calories:x.calories+(Number(y.calories)||0)}),{distance:0,seconds:0,calories:0})}
+function streak(){const days=new Set(activities.map(a=>new Date(a.date).toISOString().slice(0,10)));let d=new Date(),n=0;while(days.has(d.toISOString().slice(0,10))){n++;d.setDate(d.getDate()-1)}return n}
+function activityHtml(a){const date=new Intl.DateTimeFormat('pt-BR',{day:'2-digit',month:'short'}).format(new Date(a.date));const hr=a.avgHeartRate?` · ${a.avgHeartRate} bpm`:'';return `<div class="activity"><span class="kind">${icons[a.type]||'•'}</span><main><b>${a.type}</b><small>${date} · ${Math.floor(a.seconds/60)} min · ${a.calories} kcal${hr}</small></main><aside><b>${Number(a.distance).toFixed(2)} km</b><small>${a.maxHeartRate?'máx '+a.maxHeartRate+' bpm':'atividade'}</small></aside></div>`}
+function renderHome(){const t=total(week()),p=Math.min(100,Math.round(t.distance/weeklyGoal*100));$('#streak').textContent=streak();$('#goalDistance').textContent=t.distance.toFixed(1);$('#goalValue').textContent=weeklyGoal;$('#goalPercent').textContent=p+'%';$('#goalProgress').style.width=p+'%';$('#goalMessage').textContent=p>=100?'Meta semanal concluída!':(weeklyGoal-t.distance).toFixed(1)+' km restantes';$('#weekDistance').textContent=t.distance.toFixed(1)+' km';$('#weekTime').textContent=Math.round(t.seconds/60)+' min';$('#weekCalories').textContent=t.calories;$('#weekTrend').textContent=week().length?week().length+' treino(s) esta semana':'Comece hoje';$('#recent').innerHTML=activities.slice(0,3).map(activityHtml).join('')||'<p class="muted">Nenhum treino registrado ainda.</p>'}
+function renderActivities(){const list=filter==='Todos'?activities:activities.filter(a=>a.type===filter);$('#activityList').innerHTML=list.map(activityHtml).join('')||'<p class="muted">Nenhuma atividade encontrada.</p>'}
+function renderStats(){const list=week(),t=total(list),p=Math.min(100,Math.round(t.distance/weeklyGoal*100));$('#statsDistance').textContent=t.distance.toFixed(2).replace('.',',')+' km';$('#statsGoal').textContent=weeklyGoal;$('#statsActivities').textContent=list.length;$('#statsDuration').textContent=Math.floor(t.seconds/3600)+'h '+String(Math.floor(t.seconds%3600/60)).padStart(2,'0');$('#statsCalories').textContent=t.calories;const count=Object.keys(icons).map(type=>({type,n:list.filter(a=>a.type===type).length}));const max=Math.max(1,...count.map(x=>x.n));$('#distribution').innerHTML=count.map(x=>`<div class="dist"><label>${icons[x.type]} ${x.type}</label><i><b style="width:${x.n/max*100}%"></b></i><span>${x.n}</span></div>`).join('');$('#bars').innerHTML=Array.from({length:7},(_,i)=>{const d=new Date();d.setDate(d.getDate()-(6-i));const n=activities.filter(a=>new Date(a.date).toISOString().slice(0,10)===d.toISOString().slice(0,10)).reduce((s,a)=>s+a.distance,0);return `<i style="height:${Math.max(8,Math.min(68,n/Math.max(1,weeklyGoal)*68))}px"></i>`}).join('')}
+function haversine(a,b){const R=6371,r=Math.PI/180,d1=(b.lat-a.lat)*r,d2=(b.lon-a.lon)*r,x=Math.sin(d1/2)**2+Math.cos(a.lat*r)*Math.cos(b.lat*r)*Math.sin(d2/2)**2;return 2*R*Math.atan2(Math.sqrt(x),Math.sqrt(1-x))}
+function receiveLocation(lat,lon,accuracy=0,metersPerSecond=0,alt=0){if(!started||paused||accuracy>80)return;const p={lat,lon,at:Date.now(),alt};if(lastPoint){const d=haversine(lastPoint,p);if(d>.001&&d<.2){distance+=d;path.push(p)}if(alt>lastPoint.alt)elevation+=alt-lastPoint.alt}else path.push(p);lastPoint=p;speed=Math.max(0,metersPerSecond*3.6);updateLive()}
+function updateLive(){const pace=distance>0?seconds/60/distance:0;$('#timer').textContent=[Math.floor(seconds/3600),Math.floor(seconds%3600/60),seconds%60].map(x=>String(x).padStart(2,'0')).join(':');$('#liveDistance').textContent=distance.toFixed(2);$('#livePace').textContent=pace?Math.floor(pace)+':'+String(Math.round(pace%1*60)).padStart(2,'0'):'—';$('#liveCalories').textContent=Math.round(distance*65+seconds/60*4);$('#manualDistance').textContent=distance.toFixed(2);$('#liveHr').textContent=heartRate||'—';$('#liveSpeed').textContent=speed.toFixed(1).replace('.',',')+' km/h';$('#liveElevation').textContent=Math.round(elevation)+' m';$('#liveSteps').textContent=steps}
+window.__pfNativeLocation=receiveLocation;window.__pfNativeSteps=n=>{steps=Math.round(n);updateLive()};window.__pfHeartRate=n=>{heartRate=Math.round(n);maxHeartRate=Math.max(maxHeartRate,heartRate);hrSum+=heartRate;hrCount++;updateLive()};window.__pfNativeGps=ok=>{$('#gpsTitle').textContent=ok?'GPS ativo':'GPS não iniciado';$('#gpsText').textContent=ok?'Rota sendo monitorada':'Ative o GPS para maior precisão'};window.__pfNativeError=toast;
+function native(name){try{if(window.PulseFitNative&&PulseFitNative[name])PulseFitNative[name]()}catch(e){}}
+function startGps(){if(window.PulseFitNative){native('startTracking');return}if(!navigator.geolocation){toast('GPS não disponível');return}gpsWatch=navigator.geolocation.watchPosition(p=>receiveLocation(p.coords.latitude,p.coords.longitude,p.coords.accuracy,p.coords.speed||0,p.coords.altitude||0),()=>toast('Permissão de localização negada'),{enableHighAccuracy:true,maximumAge:1000,timeout:10000});$('#gpsTitle').textContent='GPS ativo';$('#gpsText').textContent='Rota sendo monitorada'}
+function stopGps(){if(window.PulseFitNative)native('stopTracking');if(gpsWatch!==null){navigator.geolocation.clearWatch(gpsWatch);gpsWatch=null}}
+function resetSession(){distance=0;seconds=0;lastPoint=null;path=[];elevation=0;speed=0;heartRate=0;maxHeartRate=0;hrSum=0;hrCount=0;steps=0;updateLive()}
+$('#start').addEventListener('click',()=>{started=true;paused=false;resetSession();$('#start').hidden=true;$('#pause').hidden=false;$('#finish').hidden=false;startGps();timerId=setInterval(()=>{if(!paused){seconds++;updateLive()}},1000);toast('Treino iniciado')});
+$('#pause').addEventListener('click',()=>{paused=!paused;$('#pause').textContent=paused?'Continuar':'Pausar';if(paused)lastPoint=null;toast(paused?'Treino pausado':'Treino retomado')});
+$('#finish').addEventListener('click',()=>{if(seconds<5&&distance===0){toast('Faça alguns segundos ou informe uma distância');return}activities.unshift({id:Date.now(),type:selectedType,date:new Date().toISOString(),seconds,distance:Number(distance.toFixed(2)),calories:Math.round(distance*65+seconds/60*4),avgHeartRate:hrCount?Math.round(hrSum/hrCount):0,maxHeartRate,elevation:Math.round(elevation),steps,path});save();stopGps();clearInterval(timerId);started=false;$('#start').hidden=false;$('#pause').hidden=true;$('#finish').hidden=true;toast('Treino salvo');go('activities')});
+$('#plus').addEventListener('click',()=>{distance=Math.min(999,distance+.1);updateLive()});$('#minus').addEventListener('click',()=>{distance=Math.max(0,distance-.1);updateLive()});$('#gpsButton').addEventListener('click',startGps);
+$$('.filter').forEach(x=>x.addEventListener('click',()=>{filter=x.dataset.filter;$$('.filter').forEach(y=>y.classList.remove('active'));x.classList.add('active');renderActivities()}));
+$('#themeBtn').addEventListener('click',()=>{document.body.classList.toggle('light');localStorage.setItem(THEME_KEY,document.body.classList.contains('light')?'light':'dark')});
+function setWatch(connected,scanning=false){$('#watchTitle').textContent=connected?'Relógio conectado':scanning?'Procurando relógio…':'Relógio não conectado';$('#watchText').textContent=connected?'Batimentos recebidos em tempo real':'Bluetooth / sensor cardíaco padrão';$('#watchButton').textContent=connected?'Desconectar':'Conectar';$('#watchButton').classList.toggle('connected',connected);$('#profileWatchTitle').textContent=connected?'Relógio conectado':'Conectar relógio';$('#profileWatchText').textContent=connected?'Batimento em tempo real':'Bluetooth / batimento cardíaco'}
+async function browserWatch(){if(!navigator.bluetooth){toast('Use o APK ou Chrome com HTTPS');return}try{setWatch(false,true);btDevice=await navigator.bluetooth.requestDevice({filters:[{services:['heart_rate']}]});btDevice.addEventListener('gattserverdisconnected',()=>setWatch(false));const g=await btDevice.gatt.connect(),s=await g.getPrimaryService('heart_rate');btCharacteristic=await s.getCharacteristic('heart_rate_measurement');await btCharacteristic.startNotifications();btCharacteristic.addEventListener('characteristicvaluechanged',e=>{const v=e.target.value,b=v.getUint8(0)&1?v.getUint16(1,true):v.getUint8(1);window.__pfHeartRate(b)});setWatch(true);toast('Relógio conectado')}catch(e){setWatch(false);if(e.name!=='NotFoundError')toast('Não foi possível conectar')}}
+function connectWatch(){if(window.PulseFitNative)native('scanWatch');else browserWatch()};function disconnectWatch(){if(window.PulseFitNative)native('disconnectWatch');else if(btDevice&&btDevice.gatt.connected)btDevice.gatt.disconnect();setWatch(false)}
+$('#watchButton').addEventListener('click',()=>$('#watchButton').classList.contains('connected')?disconnectWatch():connectWatch());$('#profileWatch').addEventListener('click',()=>$('#watchButton').classList.contains('connected')?disconnectWatch():connectWatch());
+$('#editGoal').addEventListener('click',()=>{$('#goalInput').value=weeklyGoal;$('#modal').classList.add('open')});$('#goalForm').addEventListener('submit',e=>{e.preventDefault();weeklyGoal=Math.max(1,Number($('#goalInput').value)||20);save();$('#modal').classList.remove('open');renderHome();renderStats()});$('#modal').addEventListener('click',e=>{if(e.target.id==='modal')e.currentTarget.classList.remove('open')});
+$('#export').addEventListener('click',()=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify({app:'PulseFit',version:2,goal:weeklyGoal,activities},null,2)],{type:'application/json'}));a.download='pulsefit-backup.json';a.click();toast('Backup exportado')});$('#import').addEventListener('click',()=>$('#file').click());$('#file').addEventListener('change',e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);if(!Array.isArray(d.activities))throw Error();activities=d.activities;weeklyGoal=Number(d.goal)||20;save();renderHome();renderActivities();renderStats();toast('Backup restaurado')}catch(e){toast('Backup inválido')}};r.readAsText(f)});$('#clear').addEventListener('click',()=>{if(confirm('Apagar todo o histórico?')){activities=[];save();renderHome();renderActivities();renderStats()}});
+renderHome();renderActivities();renderStats();updateLive();
 </script>
 </body>
 </html>
